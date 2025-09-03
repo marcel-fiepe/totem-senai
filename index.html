@@ -31,12 +31,16 @@
         :root {
             --senai-blue: #00508b;
             --senai-blue-light: #0073B7;
+            --orange-senai: #e84910;
         }
         .bg-senai-blue {
             background-color: var(--senai-blue);
         }
         .hover\:bg-senai-blue-light:hover {
             background-color: var(--senai-blue-light);
+        }
+        .bg-orange-senai {
+            background-color: var(--orange-senai);
         }
     </style>
 </head>
@@ -45,8 +49,8 @@
     <!-- Canvas para o background animado -->
     <canvas id="connect-tree-canvas"></canvas>
 
-    <!-- Container principal que centraliza o conteúdo -->
-    <div class="flex flex-col items-center justify-center space-y-12 max-w-lg mx-auto p-8 bg-white rounded-xl shadow-lg relative z-10">
+    <!-- Container do Menu Principal -->
+    <div id="main-menu" class="flex flex-col items-center justify-center space-y-12 max-w-lg mx-auto p-8 bg-white rounded-xl shadow-lg relative z-10">
 
         <!-- Logo da instituição -->
         <div class="w-full text-center">
@@ -59,19 +63,33 @@
         <div class="flex flex-col sm:flex-row items-center justify-center space-y-6 sm:space-y-0 sm:space-x-8 w-full">
             
             <!-- Botão para o Portal do Aluno -->
-            <a href="https://sge.pe.senai.br/framehtml/Web/App/Edu/PortalEducacional/login/"
+            <button id="btn-aluno"
                class="flex-1 min-w-[200px] flex items-center justify-center whitespace-nowrap w-full p-6 bg-senai-blue text-white text-base font-bold rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 hover:bg-senai-blue-light">
                Portal do Aluno
-            </a>
+            </button>
             
             <!-- Botão para a página de Bolsas de Estudo -->
-            <a href="https://www.pe.senai.br/editais/"
+            <button id="btn-bolsas"
                class="flex-1 min-w-[200px] flex items-center justify-center whitespace-nowrap w-full p-6 bg-senai-blue text-white text-base font-bold rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 hover:bg-senai-blue-light">
                Bolsas de Estudo
-            </a>
-
+            </button>
         </div>
 
+    </div>
+
+    <!-- Container do iFrame (oculto por padrão) -->
+    <div id="iframe-container" class="hidden absolute top-0 left-0 w-full h-full flex flex-col p-4 bg-gray-100 z-20">
+        
+        <!-- Botão Voltar -->
+        <button id="btn-voltar" class="absolute top-4 left-4 z-30 flex items-center p-4 bg-orange-senai text-white rounded-full shadow-lg transition-transform transform hover:scale-105">
+            <!-- Icone de Voltar (Seta SVG) -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </button>
+        
+        <!-- O iFrame para carregar o conteúdo externo -->
+        <iframe id="kiosk-iframe" class="flex-grow w-full h-full border-none rounded-xl"></iframe>
     </div>
     
     <script>
@@ -166,7 +184,30 @@
             createParticles();
             animate();
         }
-    </script>
 
+        // Lógica de navegação para o Kiosk
+        const mainMenu = document.getElementById('main-menu');
+        const iframeContainer = document.getElementById('iframe-container');
+        const kioskIframe = document.getElementById('kiosk-iframe');
+        const btnAluno = document.getElementById('btn-aluno');
+        const btnBolsas = document.getElementById('btn-bolsas');
+        const btnVoltar = document.getElementById('btn-voltar');
+
+        function navigateTo(url) {
+            mainMenu.classList.add('hidden');
+            iframeContainer.classList.remove('hidden');
+            kioskIframe.src = url;
+        }
+
+        function goBack() {
+            mainMenu.classList.remove('hidden');
+            iframeContainer.classList.add('hidden');
+            kioskIframe.src = ''; // Limpa o iFrame para evitar bugs e memória
+        }
+
+        btnAluno.addEventListener('click', () => navigateTo('https://sge.pe.senai.br/framehtml/Web/App/Edu/PortalEducacional/login/'));
+        btnBolsas.addEventListener('click', () => navigateTo('https://www.pe.senai.br/editais/'));
+        btnVoltar.addEventListener('click', goBack);
+    </script>
 </body>
 </html>
